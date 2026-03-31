@@ -21,6 +21,19 @@ Stačí otevřít `index.html` v běžném webovém prohlížeči.
 
 Žádný build krok není potřeba. To je záměr, protože v aktuálním prostředí nejsou dostupné Node ani Python nástroje.
 
+## GitHub Pages
+
+Repo je připravené pro GitHub Pages dvěma způsoby:
+
+- staticky z větve `main`
+- automaticky přes workflow v `.github/workflows/deploy-pages.yml`
+
+Veřejná adresa hry je:
+
+- `https://ptasekjan-ai.github.io/Baltik/`
+
+Pokud se stránka ještě neukazuje, v nastavení repozitáře otevři `Settings > Pages` a nastav zdroj na `GitHub Actions` nebo `Deploy from a branch` s větví `main` a složkou `/ (root)`.
+
 ## Co umí současná verze
 
 - 6 misí:
