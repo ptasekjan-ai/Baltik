@@ -1,4 +1,5 @@
 const STORAGE_KEY = "baltik-web-save-v2";
+const LEGACY_STORAGE_KEYS = ["baltik-lite-save-v1"];
 
 const COMMAND_LIBRARY = {
   MOVE: { id: "MOVE", icon: "↑", label: "Krok vpřed", hotkey: "↑" },
@@ -461,13 +462,6 @@ function addCommand(commandId) {
     return;
   }
 
-  if (state.program.length >= level.maxCommands) {
-    playTone("bump");
-    setFeedback(`Tahle mise dovolí nejvýš ${level.maxCommands} kouzel.`);
-    render();
-    return;
-  }
-
   if (state.playback && !state.playback.running) {
     clearPlayback();
   }
@@ -642,8 +636,7 @@ function executeNextCommand() {
   }
 
   if (playback.pointer >= playback.queue.length) {
-    setFeedback(`${message} Úkol ještě není hotový.`);
-    finishRun(false);
+    finishRun(false, message);
     return;
   }
 
@@ -651,7 +644,7 @@ function executeNextCommand() {
   render();
 }
 
-function finishRun(success) {
+function finishRun(success, detailMessage = "") {
   const level = currentLevel();
   const playback = state.playback;
 
@@ -672,11 +665,12 @@ function finishRun(success) {
     const session = getSessionState(level.id);
     session.failedRuns += 1;
     playTone("fail");
+    const prefix = detailMessage ? `${detailMessage} ` : "";
 
     if (session.failedRuns >= 2) {
-      setFeedback("Kouzlo doběhlo, ale úkol není hotový. Nápověda je připravená.");
+      setFeedback(`${prefix}Úkol ještě není hotový. Nápověda je připravená.`);
     } else {
-      setFeedback("Kouzlo doběhlo, ale úkol není hotový. Zkus program upravit.");
+      setFeedback(`${prefix}Úkol ještě není hotový. Zkus program upravit.`);
     }
   }
 
@@ -817,8 +811,7 @@ function renderLevelPicker() {
   elements.levelPicker.innerHTML = LEVELS.map((level, index) => {
     const result = state.save.results[level.id];
     const locked = !isLevelUnlocked(level.id);
-    const stars = result?.stars ? `⭐ ${result.stars}` : "Bez hvězd";
-    const meta = `${stars} • limit ${level.maxCommands}`;
+    const meta = result?.stars ? `⭐ ${result.stars}` : "Bez hvězd";
 
     return `
       <button
@@ -838,13 +831,12 @@ function renderLevelPicker() {
 
 function renderPalette() {
   const level = currentLevel();
-  const limitReached = state.program.length >= level.maxCommands;
 
   elements.palette.innerHTML = level.allowed.map((commandId) => {
     const template = COMMAND_LIBRARY[commandId];
     const label =
       commandId === "CAST" && level.spellLabel ? level.spellLabel : template.label;
-    const disabled = state.playback?.running || limitReached ? "disabled" : "";
+    const disabled = state.playback?.running ? "disabled" : "";
 
     return `
       <button class="palette-button" type="button" data-command-id="${commandId}" ${disabled}>
@@ -897,13 +889,11 @@ function renderBoard() {
 
 function renderProgram() {
   const playback = state.playback;
-  const level = currentLevel();
 
   if (!state.program.length) {
     elements.programList.innerHTML = `
       <p class="timeline-empty">
         Program je zatím prázdný. Začni jedním krokem vpřed a pozoruj, co se stane.
-        Do této mise můžeš složit nejvýš ${level.maxCommands} kouzel.
       </p>
     `;
     return;
@@ -931,7 +921,7 @@ function renderMeta() {
 
   elements.goalStatus.textContent = describeGoal(level, runtime);
   elements.stepCounter.textContent = String(runtime.steps);
-  elements.commandCounter.textContent = `${state.program.length} / ${level.maxCommands}`;
+  elements.commandCounter.textContent = formatProgramCount(state.program.length);
   elements.bestScore.textContent = result?.bestSteps ? `${result.bestSteps} kroků` : "-";
 }
 
@@ -1015,6 +1005,18 @@ function directionLabel(direction) {
     S: "jih",
     W: "západ",
   }[direction];
+}
+
+function formatProgramCount(count) {
+  if (count === 1) {
+    return "1 příkaz";
+  }
+
+  if (count >= 2 && count <= 4) {
+    return `${count} příkazy`;
+  }
+
+  return `${count} příkazů`;
 }
 
 function scoreLevel(level, steps) {
@@ -1137,7 +1139,9 @@ function loadSave() {
   const fallback = defaultSave();
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS]
+      .map((key) => window.localStorage.getItem(key))
+      .find(Boolean);
 
     if (!raw) {
       return fallback;
@@ -1145,7 +1149,7 @@ function loadSave() {
 
     const parsed = JSON.parse(raw);
 
-    return {
+    return normalizeSave({
       unlocked: Array.isArray(parsed.unlocked) && parsed.unlocked.length
         ? parsed.unlocked
         : fallback.unlocked,
@@ -1156,7 +1160,7 @@ function loadSave() {
         ...fallback.settings,
         ...(parsed.settings || {}),
       },
-    };
+    });
   } catch (error) {
     return fallback;
   }
@@ -1173,9 +1177,25 @@ function defaultSave() {
   };
 }
 
+function normalizeSave(save) {
+  const unlocked = new Set([LEVELS[0].id, ...(save.unlocked || [])]);
+
+  LEVELS.forEach((level, index) => {
+    if (save.results?.[level.id]?.completed && LEVELS[index + 1]) {
+      unlocked.add(LEVELS[index + 1].id);
+    }
+  });
+
+  return {
+    ...save,
+    unlocked: LEVELS.map((level) => level.id).filter((id) => unlocked.has(id)),
+  };
+}
+
 function persistSave() {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.save));
+    LEGACY_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
   } catch (error) {
     setFeedback("Uložení se nepovedlo. Hra ale běží dál.");
   }

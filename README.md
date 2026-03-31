@@ -7,7 +7,7 @@ Hratelný browserový prototyp inspirovaný analýzou původního světa Baltík
 - skládání ikonových příkazů
 - okamžité přehrání a ladění pozorováním
 - jednoduché dětské mise místo složitého menu a technického balastu
-- lehkou puzzle vrstvu přes limit kouzel v každé misi
+- víc misí a trochu bohatší herní smyčku než v první lite verzi
 
 ## Co tu je teď
 
@@ -41,7 +41,6 @@ Pokud se stránka ještě neukazuje, v nastavení repozitáře otevři `Settings
   - 2 rozsvěcovací mise
   - 2 stavební mise
 - příkazy `MOVE`, `TURN_LEFT`, `TURN_RIGHT`, `CAST`
-- limit kouzel v každé misi
 - tlačítka `Spustit`, `Krok`, `Stop`, `Reset mise`, `Zpět`, `Smazat vše`
 - kliknutí na jednotlivý krok v programu pro jeho smazání
 - lokální ukládání průchodu a hvězdiček

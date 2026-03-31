@@ -477,10 +477,14 @@ input:focus-visible {
 }
 
 .command-chip {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -489,6 +493,12 @@ input:focus-visible {
 
 .command-chip:hover {
   border-color: rgba(255, 205, 116, 0.4);
+}
+
+.command-chip:disabled {
+  color: var(--text);
+  opacity: 1;
+  cursor: default;
 }
 
 .command-chip--active {
