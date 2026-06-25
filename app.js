@@ -551,7 +551,7 @@ function removeCommandAt(index) {
 
   hideCelebration();
   const [removed] = state.program.splice(index, 1);
-  setFeedback(`${commandLabel(removed)} zmizel z linky.`);
+  setFeedback(`${commandLabel(removed)} smazán z linky.`);
   render();
 }
 
@@ -566,7 +566,7 @@ function undoCommand() {
 
   hideCelebration();
   const removed = state.program.pop();
-  setFeedback(`${commandLabel(removed)} je pryč. Plán se hned přepočítal.`);
+  setFeedback(`Poslední krok smazán: ${commandLabel(removed)}. Plán se hned přepočítal.`);
   render();
 }
 
