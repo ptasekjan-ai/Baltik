@@ -1,57 +1,53 @@
-# Kouzelník Baltík Web
+# Kouzelnická výprava s Baltíkem
 
-Hratelný browserový prototyp inspirovaný analýzou původního světa Baltík/Baltazar. Cílem bylo zachovat to nejdůležitější:
+Statická browserová hra inspirovaná principem Baltíka: dítě skládá jednoduché ikonové příkazy, spustí je a sleduje, jak se malý kouzelník pohybuje po 2D světě.
 
-- malý 2D svět na mřížce
-- kouzelníka jako vykonavatele vůle dítěte
-- skládání ikonových příkazů
-- okamžité přehrání a ladění pozorováním
-- jednoduché dětské mise místo složitého menu a technického balastu
-- víc misí a trochu bohatší herní smyčku než v první lite verzi
+Aktuální verze už míří víc na dětský herní zážitek než na technické demo. Má kampaň, odemykání misí, hvězdy, drahokamy, náhled plánované trasy, zvuky, nápovědy a oslavu po splnění mise.
 
-## Co tu je teď
+## Jak spustit
 
-- `index.html`: rozhraní hry
-- `styles.css`: dětsky čitelný fantasy vzhled bez závislostí
-- `app.js`: herní logika, levely, program builder, runner, nápovědy a ukládání do `localStorage`
+Stačí otevřít `index.html` v běžném prohlížeči.
 
-## Jak to spustit
+Pro lokální testování přes server lze použít například:
 
-Stačí otevřít `index.html` v běžném webovém prohlížeči.
+```powershell
+python -m http.server 4173 --bind 127.0.0.1
+```
 
-Žádný build krok není potřeba. To je záměr, protože v aktuálním prostředí nejsou dostupné Node ani Python nástroje.
+Pak otevři:
+
+```text
+http://127.0.0.1:4173/index.html
+```
+
+## Co hra umí
+
+- 6 postupně odemykaných misí
+- ikonové příkazy `krok`, `otoč vlevo`, `otoč vpravo`, `kouzlo`
+- mise typu dojít do cíle, rozsvítit okna a postavit cihlovou stavbu
+- bonusové drahokamy na mapě
+- živý náhled trasy ještě před spuštěním programu
+- krokování, zastavení, undo, smazání programu a rychlé `+3 kroky`
+- ukládání postupu do `localStorage`
+- hvězdičkové hodnocení podle počtu kroků
+- jemné nápovědy po dvou neúspěšných pokusech
+- vlastní rodičovská resetovací brána bez systémového popupu
+- responzivní UI pro desktop i mobil
+
+## Soubory
+
+- `index.html`: struktura hry a ovládání
+- `styles.css`: vizuální styl, animace, responsive layout
+- `app.js`: levely, herní logika, runner, ukládání, zvuky a náhled programu
 
 ## GitHub Pages
 
-Repo je připravené pro GitHub Pages dvěma způsoby:
+Repo je připravené pro statické nasazení z kořene repozitáře.
 
-- staticky z větve `main`
-- automaticky přes workflow v `.github/workflows/deploy-pages.yml`
+Veřejná adresa hry:
 
-Veřejná adresa hry je:
+```text
+https://ptasekjan-ai.github.io/Baltik/
+```
 
-- `https://ptasekjan-ai.github.io/Baltik/`
-
-Pokud se stránka ještě neukazuje, v nastavení repozitáře otevři `Settings > Pages` a nastav zdroj na `GitHub Actions` nebo `Deploy from a branch` s větví `main` a složkou `/ (root)`.
-
-## Co umí současná verze
-
-- 6 misí:
-  - 2 bludiště
-  - 2 rozsvěcovací mise
-  - 2 stavební mise
-- příkazy `MOVE`, `TURN_LEFT`, `TURN_RIGHT`, `CAST`
-- tlačítka `Spustit`, `Krok`, `Stop`, `Reset mise`, `Zpět`, `Smazat vše`
-- kliknutí na jednotlivý krok v programu pro jeho smazání
-- lokální ukládání průchodu a hvězdiček
-- jemné nápovědy po dvou neúspěšných pokusech
-- rodičovská brána pro reset postupu
-- klávesové zkratky pro rychlé skládání programu
-
-## Směr další iterace
-
-- přidat skutečné bloky `opakuj` a `když`
-- doplnit vlastní sprites a animace místo placeholder stylů
-- přidat volné tvoření a editor scén
-- export obrázku nebo krátké animace hotové scény
-- později případně převést do PWA nebo frameworkové verze
+Pokud se stránka neukazuje, v nastavení repozitáře otevři `Settings > Pages` a nastav zdroj na větev `main` a složku `/ (root)`, případně na GitHub Actions podle aktuální konfigurace repozitáře.

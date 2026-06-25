@@ -3,30 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kouzelník Baltík Web</title>
+  <title>Kouzelnická výprava s Baltíkem</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <div class="sky-glow sky-glow--left"></div>
-  <div class="sky-glow sky-glow--right"></div>
-
   <div class="app-shell">
-    <header class="hero-card">
-      <div>
-        <p class="eyebrow">Kouzelnický mikrosvět do prohlížeče</p>
-        <h1>Kouzelník Baltík Web</h1>
-        <p class="hero-copy">
-          Dítě skládá kouzla z ikon, spustí je a sleduje, co se v malém 2D světě stane.
-          Tahle verze už není jen úplné demo: má šest misí a rychlé ladění krok po kroku.
-        </p>
+    <header class="game-topbar">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="brand-mark__hat"></span>
+        <span class="brand-mark__spark">✦</span>
       </div>
 
-      <div class="hero-stats">
+      <div class="brand-copy">
+        <p class="eyebrow">Kouzelnická výprava</p>
+        <h1>Baltík a jiskrové mise</h1>
+      </div>
+
+      <div class="top-stats" aria-label="Postup hry">
         <div class="stat-badge">
-          <span class="stat-label">Odemčeno</span>
+          <span class="stat-icon" aria-hidden="true">🚪</span>
+          <span class="stat-label">Mise</span>
           <strong id="unlockedCount">1 / 6</strong>
         </div>
         <div class="stat-badge">
+          <span class="stat-icon" aria-hidden="true">💎</span>
+          <span class="stat-label">Drahokamy</span>
+          <strong id="totalGems">0 / 0</strong>
+        </div>
+        <div class="stat-badge">
+          <span class="stat-icon" aria-hidden="true">⭐</span>
           <span class="stat-label">Hvězdy</span>
           <strong id="totalStars">0</strong>
         </div>
@@ -34,45 +39,33 @@
     </header>
 
     <main class="game-layout">
-      <section class="play-column">
-        <div class="panel mission-panel">
-          <div class="mission-header">
-            <div>
-              <p class="eyebrow">Kapitoly</p>
-              <h2>Vyber misi</h2>
-            </div>
-            <p class="mission-subtitle">Levely se odemykají postupně a ukládají se lokálně do prohlížeče.</p>
+      <section class="stage-panel" aria-label="Herní scéna">
+        <div class="mission-strip" id="levelPicker" aria-label="Výběr misí"></div>
+
+        <div class="stage-header">
+          <div>
+            <p class="eyebrow" id="levelEyebrow">Kapitola 1</p>
+            <h2 id="levelTitle">Hvězdná zahrada</h2>
+            <p id="levelDescription" class="level-description"></p>
           </div>
-          <div class="level-picker" id="levelPicker" aria-label="Výběr misí"></div>
+
+          <div class="quest-meter" aria-label="Postup mise">
+            <div class="quest-meter__label">
+              <span id="goalStatus">Najdi hvězdu.</span>
+              <strong id="goalPercent">0%</strong>
+            </div>
+            <div class="meter-track">
+              <span id="goalMeter" style="width: 0%"></span>
+            </div>
+          </div>
         </div>
 
-        <div class="panel board-panel">
-          <div class="board-header">
-            <div>
-              <p class="eyebrow" id="levelEyebrow">Kapitola 1</p>
-              <h2 id="levelTitle">Bludiště</h2>
-              <p id="levelDescription" class="level-description"></p>
-            </div>
-            <div class="board-meta">
-              <div class="meta-chip">
-                <span class="meta-label">Úkol</span>
-                <strong id="goalStatus">Najdi poklad.</strong>
-              </div>
-              <div class="meta-chip">
-                <span class="meta-label">Kroky</span>
-                <strong id="stepCounter">0</strong>
-              </div>
-              <div class="meta-chip">
-                <span class="meta-label">V programu</span>
-                <strong id="commandCounter">0 příkazů</strong>
-              </div>
-              <div class="meta-chip">
-                <span class="meta-label">Nejlépe</span>
-                <strong id="bestScore">-</strong>
-              </div>
-            </div>
+        <div class="board-shell">
+          <div class="board-legend" aria-hidden="true">
+            <span>💎 bonus</span>
+            <span>⭐ cíl</span>
+            <span>✦ náhled</span>
           </div>
-
           <div
             class="board"
             id="board"
@@ -80,88 +73,139 @@
             aria-live="polite"
             aria-label="Hrací plocha"
           ></div>
+        </div>
 
+        <div class="play-status">
           <div class="status-bar" id="feedback" aria-live="polite">
-            Klikni na příkazy vpravo a pak spusť kouzlo.
+            Poskládej kouzlo a spusť Baltíka.
+          </div>
+          <div class="mini-stats" aria-label="Stav programu">
+            <div class="meta-chip">
+              <span class="meta-label">Kroky</span>
+              <strong id="stepCounter">0</strong>
+            </div>
+            <div class="meta-chip">
+              <span class="meta-label">Program</span>
+              <strong id="commandCounter">0 příkazů</strong>
+            </div>
+            <div class="meta-chip">
+              <span class="meta-label">Nejlépe</span>
+              <strong id="bestScore">-</strong>
+            </div>
           </div>
         </div>
       </section>
 
-      <aside class="control-column">
-        <section class="panel palette-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Kouzla</p>
-              <h2>Příkazová lišta</h2>
-            </div>
-            <p class="panel-copy">Tlačítkem přidáš příkaz do programu. Klávesy: ↑, ←, →, C.</p>
+      <aside class="control-panel" aria-label="Kouzelnická dílna">
+        <section class="tool-section palette-section">
+          <div class="section-heading">
+            <p class="eyebrow">Kouzla</p>
+            <h2>Příkazová lišta</h2>
           </div>
-
           <div class="palette-grid" id="palette" aria-label="Dostupná kouzla"></div>
         </section>
 
-        <section class="panel program-panel">
-          <div class="panel-heading">
+        <section class="tool-section program-section">
+          <div class="section-heading section-heading--row">
             <div>
               <p class="eyebrow">Program</p>
               <h2>Kouzelnická linka</h2>
             </div>
-            <p class="panel-copy">Program se přehraje krok po kroku. Kliknutím na hotový krok ho můžeš smazat.</p>
+            <button id="tripleStepButton" class="tiny-button" type="button" title="Přidat tři kroky vpřed">
+              +3 kroky
+            </button>
           </div>
 
           <div class="timeline" id="programList" aria-live="polite"></div>
 
           <div class="runner-controls">
-            <button id="runButton" class="action-button action-button--primary" type="button">Spustit</button>
-            <button id="stepButton" class="action-button" type="button">Krok</button>
-            <button id="stopButton" class="action-button" type="button">Stop</button>
-            <button id="resetButton" class="action-button" type="button">Reset mise</button>
-            <button id="undoButton" class="action-button" type="button">Zpět</button>
-            <button id="clearButton" class="action-button" type="button">Smazat vše</button>
+            <button id="runButton" class="action-button action-button--primary" type="button">
+              <span aria-hidden="true">▶</span>
+              Spustit
+            </button>
+            <button id="stepButton" class="action-button" type="button">
+              <span aria-hidden="true">⏭</span>
+              Krok
+            </button>
+            <button id="stopButton" class="action-button" type="button">
+              <span aria-hidden="true">■</span>
+              Stop
+            </button>
+            <button id="resetButton" class="action-button" type="button">
+              <span aria-hidden="true">↺</span>
+              Reset
+            </button>
+            <button id="undoButton" class="action-button" type="button">
+              <span aria-hidden="true">↩</span>
+              Zpět
+            </button>
+            <button id="clearButton" class="action-button" type="button">
+              <span aria-hidden="true">✕</span>
+              Smazat
+            </button>
           </div>
         </section>
 
-        <section class="panel helper-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Pomoc</p>
-              <h2>Nápověda a nastavení</h2>
-            </div>
+        <section class="tool-section helper-section">
+          <div class="section-heading">
+            <p class="eyebrow">Jiskra</p>
+            <h2>Nápověda</h2>
           </div>
 
           <div class="hint-box">
-            <p class="hint-title">Nápověda mise</p>
-            <p id="hintText" class="hint-copy">Po dvou nepovedených pokusech se odemkne jemná nápověda.</p>
+            <p id="hintText" class="hint-copy">Po dvou pokusech se objeví jemná nápověda.</p>
             <button id="hintButton" class="action-button" type="button">Ukázat nápovědu</button>
           </div>
 
           <div class="settings-grid">
             <label class="setting-field">
-              <span>Rychlost přehrání</span>
+              <span>Rychlost</span>
               <select id="speedSelect">
-                <option value="620">Pomalá</option>
-                <option value="430" selected>Střední</option>
-                <option value="260">Rychlá</option>
+                <option value="660">Pomalá</option>
+                <option value="440" selected>Střední</option>
+                <option value="280">Rychlá</option>
               </select>
             </label>
 
             <label class="setting-toggle">
               <input id="soundToggle" type="checkbox" checked>
-              <span>Zvuková kouzla</span>
+              <span>Zvuky</span>
             </label>
           </div>
 
-          <div class="shortcut-box">
-            <p class="shortcut-title">Klávesové zkratky</p>
-            <p>↑ krok vpřed, ← vlevo, → vpravo, C kouzlo, Enter spustit, Backspace zpět, R reset.</p>
-          </div>
-
           <button id="parentResetButton" class="action-button action-button--danger" type="button">
-            Rodičovský reset postupu
+            Rodičovský reset
           </button>
+
+          <div class="reset-gate" id="resetGate" hidden>
+            <label class="setting-field">
+              <span>7 + 5 =</span>
+              <input id="resetAnswer" type="text" inputmode="numeric" autocomplete="off" maxlength="2">
+            </label>
+            <button id="confirmResetButton" class="action-button action-button--danger" type="button">
+              Potvrdit reset
+            </button>
+          </div>
         </section>
       </aside>
     </main>
+  </div>
+
+  <div class="celebration" id="celebration" hidden>
+    <div class="confetti-field" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="celebration-card" role="dialog" aria-modal="true" aria-labelledby="celebrationTitle">
+      <p class="eyebrow" id="celebrationKicker">Mise hotová</p>
+      <h2 id="celebrationTitle">Baltík to zvládl!</h2>
+      <div class="celebration-stars" id="celebrationStars" aria-label="Získané hvězdy"></div>
+      <p id="celebrationText"></p>
+      <div class="celebration-actions">
+        <button id="nextLevelButton" class="action-button action-button--primary" type="button">Další mise</button>
+        <button id="replayLevelButton" class="action-button" type="button">Ještě jednou</button>
+      </div>
+    </div>
   </div>
 
   <script src="./app.js" defer></script>
