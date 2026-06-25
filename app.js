@@ -35,8 +35,7 @@ const LEVELS = [
     summary: "Dojdi ke hvězdě a cestou sbírej třpytky.",
     description: "První výprava je krátká, barevná a skvěle ukáže, jak Baltík poslouchá program.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT"],
-    par: 20,
-    maxCommands: 30,
+    minimumSteps: 20,
     map: [
       "###############",
       "#.............#",
@@ -70,8 +69,7 @@ const LEVELS = [
     summary: "Stoupni si před okno a pošli do něj jiskru.",
     description: "Tady už Baltík čaruje. Okno se rozsvítí jen tehdy, když stojí přímo před ním.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT", "CAST"],
-    par: 28,
-    maxCommands: 36,
+    minimumSteps: 44,
     spellLabel: "Rozsviť",
     spellTargetTile: "W",
     map: [
@@ -116,8 +114,7 @@ const LEVELS = [
     summary: "Doplň označená místa kouzelnými cihlami.",
     description: "Baltík nestaví pod sebe, ale do políčka před sebou. Obcházení stavby je hlavní fígl.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT", "CAST"],
-    par: 30,
-    maxCommands: 40,
+    minimumSteps: 36,
     spellLabel: "Postav",
     spellTargetTile: "B",
     map: [
@@ -166,8 +163,7 @@ const LEVELS = [
     summary: "Projdi klikatou cestu až do čítárny.",
     description: "Delší cesta už chce trochu plánování. Náhled trasy ukáže, kam program Baltíka dovede.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT"],
-    par: 30,
-    maxCommands: 40,
+    minimumSteps: 20,
     map: [
       "###############",
       "#.............#",
@@ -201,19 +197,18 @@ const LEVELS = [
     summary: "Rozsviť ulici, aby mohla začít slavnost.",
     description: "Více oken, více rozhodování. Každá správná jiskra rozsvítí další kus městečka.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT", "CAST"],
-    par: 36,
-    maxCommands: 48,
+    minimumSteps: 47,
     spellLabel: "Rozsviť",
     spellTargetTile: "W",
     map: [
       "###############",
       "#.............#",
-      "#.ww...ww...w.#",
-      "#.##...##...#.#",
+      "#.ww...ww.....#",
+      "#.##...##.....#",
       "#.............#",
       "#..w.....w....#",
       "#.............#",
-      "#.ww...ww.....#",
+      "#.ww..........#",
       "#.............#",
       "###############",
     ],
@@ -225,13 +220,10 @@ const LEVELS = [
         { x: 3, y: 2 },
         { x: 7, y: 2 },
         { x: 8, y: 2 },
-        { x: 12, y: 2 },
         { x: 3, y: 5 },
         { x: 9, y: 5 },
         { x: 2, y: 7 },
         { x: 3, y: 7 },
-        { x: 7, y: 7 },
-        { x: 8, y: 7 },
       ],
     },
     gems: [
@@ -253,8 +245,7 @@ const LEVELS = [
     summary: "Dostav velkou bránu a najdi poslední třpytky.",
     description: "Finální stavba je pořád fér, ale chce trpělivost. Dobrý plán vypadá jako kouzelný taneček.",
     allowed: ["MOVE", "TURN_LEFT", "TURN_RIGHT", "CAST"],
-    par: 44,
-    maxCommands: 58,
+    minimumSteps: 42,
     spellLabel: "Postav",
     spellTargetTile: "B",
     map: [
@@ -277,22 +268,13 @@ const LEVELS = [
         { x: 7, y: 2 },
         { x: 8, y: 2 },
         { x: 5, y: 3 },
-        { x: 7, y: 3 },
         { x: 9, y: 3 },
         { x: 4, y: 4 },
-        { x: 5, y: 4 },
-        { x: 9, y: 4 },
         { x: 10, y: 4 },
         { x: 4, y: 5 },
-        { x: 5, y: 5 },
-        { x: 9, y: 5 },
         { x: 10, y: 5 },
         { x: 5, y: 6 },
-        { x: 7, y: 6 },
         { x: 9, y: 6 },
-        { x: 6, y: 7 },
-        { x: 7, y: 7 },
-        { x: 8, y: 7 },
       ],
     },
     gems: [
@@ -318,6 +300,7 @@ const elements = {
   levelEyebrow: document.getElementById("levelEyebrow"),
   levelTitle: document.getElementById("levelTitle"),
   levelDescription: document.getElementById("levelDescription"),
+  challengeSummary: document.getElementById("challengeSummary"),
   goalStatus: document.getElementById("goalStatus"),
   goalPercent: document.getElementById("goalPercent"),
   goalMeter: document.getElementById("goalMeter"),
@@ -526,11 +509,6 @@ function addCommand(commandId) {
     return;
   }
 
-  if (state.program.length >= level.maxCommands) {
-    setFeedback(`Linka je plná. Zkus něco smazat, nebo použij kratší cestu.`);
-    return;
-  }
-
   if (state.playback && !state.playback.running) {
     clearPlayback();
   }
@@ -548,21 +526,13 @@ function addTripleStep() {
     return;
   }
 
-  const room = Math.max(0, level.maxCommands - state.program.length);
-  const count = Math.min(3, room);
-
-  if (!count) {
-    setFeedback("Linka je plná. Nejdřív smaž pár kroků.");
-    return;
-  }
-
   if (state.playback && !state.playback.running) {
     clearPlayback();
   }
 
   hideCelebration();
-  state.program.push(...Array(count).fill("MOVE"));
-  setFeedback(count === 3 ? "Tři kroky vpřed jsou v lince." : "Přidány kroky, které se vešly do linky.");
+  state.program.push("MOVE", "MOVE", "MOVE");
+  setFeedback("Tři kroky vpřed jsou v lince.");
   render();
 }
 
@@ -943,6 +913,7 @@ function renderLevelPicker() {
         <span class="level-card__number">${locked ? "🔒" : index + 1}</span>
         <span class="level-card__title">${level.icon} ${level.title}</span>
         <span class="level-card__reward">${stars} <span>${gems}</span></span>
+        <span class="level-card__challenge">${formatChallengeSummary(level)}</span>
       </button>
     `;
   }).join("");
@@ -978,6 +949,7 @@ function renderBoard() {
   elements.levelEyebrow.textContent = level.chapter;
   elements.levelTitle.textContent = level.title;
   elements.levelDescription.textContent = level.description;
+  elements.challengeSummary.textContent = formatChallengeSummary(level);
 
   for (let y = 0; y < runtime.grid.length; y += 1) {
     for (let x = 0; x < runtime.grid[y].length; x += 1) {
@@ -1065,7 +1037,7 @@ function renderMeta() {
   elements.goalPercent.textContent = `${progress.percent}%`;
   elements.goalMeter.style.width = `${progress.percent}%`;
   elements.stepCounter.textContent = String(runtime.steps);
-  elements.commandCounter.textContent = formatProgramCount(state.program.length, level.maxCommands);
+  elements.commandCounter.textContent = formatProgramCount(state.program.length);
   elements.bestScore.textContent = result?.bestSteps ? `${result.bestSteps} kroků` : "-";
 }
 
@@ -1103,7 +1075,7 @@ function renderButtons() {
   elements.undoButton.disabled = !hasProgram || isRunning;
   elements.clearButton.disabled = !hasProgram || isRunning;
   elements.tripleStepButton.disabled =
-    isRunning || !level.allowed.includes("MOVE") || state.program.length >= level.maxCommands;
+    isRunning || !level.allowed.includes("MOVE");
 }
 
 function simulateProgram(level, program) {
@@ -1252,17 +1224,34 @@ function directionLabel(direction) {
   }[direction];
 }
 
-function formatProgramCount(count, max) {
+function formatProgramCount(count) {
   const word = count === 1 ? "příkaz" : count >= 2 && count <= 4 ? "příkazy" : "příkazů";
-  return `${count}/${max} ${word}`;
+  return `${count} ${word}`;
+}
+
+function challengeThresholds(level) {
+  const minimum = level.minimumSteps;
+
+  return {
+    minimum,
+    medium: Math.ceil(minimum * 1.45),
+    hard: Math.ceil(minimum * 1.15),
+  };
+}
+
+function formatChallengeSummary(level) {
+  const thresholds = challengeThresholds(level);
+  return `Lehká: bez limitu · Střední: do ${thresholds.medium} · Těžká: do ${thresholds.hard}`;
 }
 
 function scoreLevel(level, steps) {
-  if (steps <= level.par) {
+  const thresholds = challengeThresholds(level);
+
+  if (steps <= thresholds.hard) {
     return 3;
   }
 
-  if (steps <= level.par + 6) {
+  if (steps <= thresholds.medium) {
     return 2;
   }
 

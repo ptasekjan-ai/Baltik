@@ -27,6 +27,8 @@ http://127.0.0.1:4173/index.html
 - mise typu dojít do cíle, rozsvítit okna a postavit cihlovou stavbu
 - bonusové drahokamy na mapě
 - živý náhled trasy ještě před spuštěním programu
+- žádný tvrdý limit délky programu; hvězdy jen motivují ke kratším řešením
+- úrovně výzvy u každé mise: lehká bez limitu, střední do minima +45 %, těžká do minima +15 %
 - krokování, zastavení, undo, smazání programu a rychlé `+3 kroky`
 - ukládání postupu do `localStorage`
 - hvězdičkové hodnocení podle počtu kroků
