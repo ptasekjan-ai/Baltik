@@ -4,6 +4,8 @@ Statická browserová hra inspirovaná principem Baltíka: dítě skládá jedno
 
 Aktuální verze už míří víc na dětský herní zážitek než na technické demo. Má kampaň, odemykání misí, hvězdy, drahokamy, náhled plánované trasy, zvuky, nápovědy a oslavu po splnění mise.
 
+Vedle původní 2D hry je nově dostupný také samostatný režim **Baltík 3D: Stínové chodby**. Jde o retro hru z první osoby s vlastním raycastingovým enginem ve stylu počátku devadesátých let. První verze obsahuje tři levely.
+
 ## Jak spustit
 
 Stačí otevřít `index.html` v běžném prohlížeči.
@@ -36,11 +38,23 @@ http://127.0.0.1:4173/index.html
 - vlastní rodičovská resetovací brána bez systémového popupu
 - responzivní UI pro desktop i mobil
 
+## Baltík 3D: Stínové chodby
+
+3D režim se spouští přes odkaz v záhlaví původní hry nebo přímo otevřením `doom-3d/index.html`.
+
+- 3 postupně odemykané levely: Stínová zahrada, Síně beze světla a Citadela Sluneční pečeti
+- softwarový raycasting bez knihoven a externích grafických podkladů
+- retro nízké rozlišení, procedurálně kreslené sprity, zbraňový HUD, automapa a zvukové efekty
+- pohyb pomocí WASD nebo šipek, otáčení myší či Q/E, kouzlo mezerníkem
+- runy, magické ohně, několik druhů stínů a finální Strážce
+- ovládání na dotykových zařízeních a ukládání postupu do `localStorage`
+
 ## Soubory
 
 - `index.html`: struktura hry a ovládání
 - `styles.css`: vizuální styl, animace, responsive layout
 - `app.js`: levely, herní logika, runner, ukládání, zvuky a náhled programu
+- `doom-3d/`: samostatná 3D hra, její tři mapy, raycastingový engine a retro vzhled
 
 ## GitHub Pages
 

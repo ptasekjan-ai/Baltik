@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100d18">
+  <title>Baltík 3D: Stínové chodby</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="back-link" href="../index.html" aria-label="Zpět do původní 2D hry">
+        <span aria-hidden="true">←</span>
+        2D výprava
+      </a>
+
+      <div class="brand" aria-label="Baltík 3D: Stínové chodby">
+        <span class="brand__kicker">Tři retro mise</span>
+        <strong>BALTÍK <em>3D</em></strong>
+        <span class="brand__subtitle">Stínové chodby</span>
+      </div>
+
+      <div class="topbar__actions">
+        <button class="metal-button" id="soundButton" type="button" aria-pressed="true">
+          <span aria-hidden="true">♪</span> Zvuk
+        </button>
+        <button class="metal-button" id="fullscreenButton" type="button">
+          <span aria-hidden="true">⛶</span> Celá obrazovka
+        </button>
+      </div>
+    </header>
+
+    <main class="game-layout">
+      <section class="game-column" aria-label="3D hra">
+        <div class="episode-strip" id="levelStrip" aria-label="Výběr levelu"></div>
+
+        <div class="screen-frame" id="screenFrame">
+          <div class="screen-frame__bolts" aria-hidden="true"></div>
+
+          <div class="screen-status" aria-live="polite">
+            <span id="mapCode">E1M1</span>
+            <strong id="mapTitle">Stínová zahrada</strong>
+            <span id="objectiveShort">Najdi tři runy</span>
+          </div>
+
+          <div class="viewport" id="viewport">
+            <canvas
+              id="gameCanvas"
+              width="384"
+              height="240"
+              tabindex="0"
+              aria-label="Pohled z první osoby do kouzelnického podzemí"
+            ></canvas>
+            <div class="scanlines" aria-hidden="true"></div>
+            <div class="vignette" aria-hidden="true"></div>
+            <div class="crosshair" id="crosshair" aria-hidden="true"><span></span></div>
+
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+            <section class="game-overlay game-overlay--menu" id="menuOverlay" aria-labelledby="menuTitle">
+              <div class="overlay-card overlay-card--menu">
+                <p class="pixel-kicker">Kouzelnická výprava / retro 3D</p>
+                <h1 id="menuTitle">STÍNOVÉ<br><span>CHODBY</span></h1>
+                <p id="menuIntro">
+                  Pod zahradou se probudily stíny. Najdi runy, rozžehni staré ohně
+                  a otevři cestu ke Sluneční pečeti.
+                </p>
+
+                <div class="menu-levels" id="menuLevels" aria-label="Tři dostupné levely"></div>
+
+                <button class="start-button" id="startButton" type="button">
+                  <span aria-hidden="true">▶</span>
+                  Vstoupit do levelu
+                </button>
+                <p class="menu-tip">WASD pohyb · myš nebo Q/E otáčení · mezerník kouzlo</p>
+              </div>
+            </section>
+
+            <section class="game-overlay" id="pauseOverlay" hidden aria-labelledby="pauseTitle">
+              <div class="overlay-card overlay-card--small">
+                <p class="pixel-kicker">Čas se zastavil</p>
+                <h2 id="pauseTitle">PAUZA</h2>
+                <p>Stiskni Escape a pokračuj.</p>
+                <button class="start-button" id="resumeButton" type="button">Pokračovat</button>
+              </div>
+            </section>
+
+            <section class="game-overlay" id="completeOverlay" hidden aria-labelledby="completeTitle">
+              <div class="overlay-card overlay-card--small">
+                <p class="pixel-kicker" id="completeKicker">Level dokončen</p>
+                <h2 id="completeTitle">PORTÁL OTEVŘEN</h2>
+                <div class="result-stats" id="resultStats"></div>
+                <button class="start-button" id="nextButton" type="button">Další level</button>
+                <button class="text-button" id="completeMenuButton" type="button">Výběr levelů</button>
+              </div>
+            </section>
+
+            <section class="game-overlay" id="deadOverlay" hidden aria-labelledby="deadTitle">
+              <div class="overlay-card overlay-card--small overlay-card--danger">
+                <p class="pixel-kicker">Stíny zvítězily</p>
+                <h2 id="deadTitle">BALTÍK PADL</h2>
+                <p>Zkus jinou cestu a hlídej si život i manu.</p>
+                <button class="start-button" id="retryButton" type="button">Zkusit znovu</button>
+                <button class="text-button" id="deadMenuButton" type="button">Výběr levelů</button>
+              </div>
+            </section>
+
+            <div class="touch-controls" aria-label="Dotykové ovládání">
+              <div class="touch-pad">
+                <button type="button" data-hold="forward" aria-label="Vpřed">▲</button>
+                <button type="button" data-hold="turnLeft" aria-label="Otočit vlevo">◀</button>
+                <button type="button" data-hold="back" aria-label="Vzad">▼</button>
+                <button type="button" data-hold="turnRight" aria-label="Otočit vpravo">▶</button>
+              </div>
+              <button class="cast-button" type="button" data-action="cast" aria-label="Seslat kouzlo">✦</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="under-screen-actions">
+          <button class="metal-button" id="restartButton" type="button">↺ Restart levelu</button>
+          <button class="metal-button" id="menuButton" type="button">▦ Výběr levelů</button>
+          <span class="focus-hint" id="focusHint">Klikni do obrazu pro ovládání myší.</span>
+        </div>
+      </section>
+
+      <aside class="mission-panel" aria-label="Informace o misi a ovládání">
+        <section class="panel-card panel-card--mission">
+          <p class="panel-kicker">Aktuální mise</p>
+          <div class="mission-number" id="missionNumber">01</div>
+          <h2 id="missionTitle">Stínová zahrada</h2>
+          <p id="missionBrief"></p>
+          <div class="objective-box">
+            <span>Úkol</span>
+            <strong id="objectiveLong">Najdi tři ztracené runy a vstup do portálu.</strong>
+          </div>
+          <div class="progress-grid">
+            <div><span>Runy</span><strong id="relicCounter">0 / 3</strong></div>
+            <div><span>Stíny</span><strong id="enemyCounter">3</strong></div>
+            <div><span>Čas</span><strong id="timeCounter">00:00</strong></div>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <p class="panel-kicker">Ovládání</p>
+          <h2>Jak se neztratit</h2>
+          <dl class="controls-list">
+            <div><dt>W S / ↑ ↓</dt><dd>vpřed a vzad</dd></div>
+            <div><dt>A D</dt><dd>úkrok do stran</dd></div>
+            <div><dt>Q E / ← →</dt><dd>otáčení</dd></div>
+            <div><dt>Mezerník</dt><dd>jiskrové kouzlo</dd></div>
+            <div><dt>Shift</dt><dd>rychlejší běh</dd></div>
+            <div><dt>Tab</dt><dd>automapa</dd></div>
+            <div><dt>Esc</dt><dd>pauza</dd></div>
+          </dl>
+        </section>
+
+        <section class="panel-card panel-card--hint">
+          <p class="panel-kicker">Baltíkova rada</p>
+          <p id="levelHint">Runy zpívají a lehce se vznášejí. Rozhlížej se i v bočních chodbách.</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <noscript>Pro spuštění 3D hry je potřeba povolit JavaScript.</noscript>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
